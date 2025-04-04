@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Products>
+	<Product>
+		<ProductID>P001</ProductID>
+		<Name>Điện thoại A</Name>
+		<Price>500</Price>
+		<Stock>10</Stock>
+		<Description>Điện thoại thông minh A</Description>
+	</Product>
+	<Product>
+		<ProductID>P002</ProductID>
+		<Name>Điện thoại B</Name>
+		<Price>700</Price>
+		<Stock>5</Stock>
+		<Description>Điện thoại thông minh B</Description>
+	</Product>
+</Products>
