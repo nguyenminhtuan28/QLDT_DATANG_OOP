@@ -1,17 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Products>
-	<Product>
-		<ProductID>P001</ProductID>
-		<Name>Điện thoại A</Name>
-		<Price>500</Price>
-		<Stock>10</Stock>
-		<Description>Điện thoại thông minh A</Description>
-	</Product>
-	<Product>
-		<ProductID>P002</ProductID>
-		<Name>Điện thoại B</Name>
-		<Price>700</Price>
-		<Stock>5</Stock>
-		<Description>Điện thoại thông minh B</Description>
-	</Product>
-</Products>
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfOrderDTO xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <OrderDTO>
+    <Price>0</Price>
+    <Stock>0</Stock>
+    <OrderID>001</OrderID>
+    <OrderDate>2025-04-09T23:42:18.849931+07:00</OrderDate>
+    <OrderedProducts>
+      <OrderItemDTO>
+        <Product xsi:type="LaptopDTO">
+          <ProductID>002</ProductID>
+          <Name>laptop test</Name>
+          <Price>7000</Price>
+          <Stock>43</Stock>
+          <Description>test</Description>
+          <CPU>3</CPU>
+          <RAM>54</RAM>
+        </Product>
+        <Quantity>2</Quantity>
+      </OrderItemDTO>
+    </OrderedProducts>
+    <OrderStatus>Cho xu ly</OrderStatus>
+  </OrderDTO>
+</ArrayOfOrderDTO>

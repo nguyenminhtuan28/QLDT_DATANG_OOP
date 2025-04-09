@@ -9,115 +9,83 @@ namespace BLL
 {
     public class OrderBLL
     {
-        private OrderDAL orderDAL;
+        private List<OrderDTO> orderList = new List<OrderDTO>();
 
-        public OrderBLL()
+        public OrderDTO CreateOrder(string orderID, DateTime orderDate, string status)
         {
-            orderDAL = new OrderDAL();
-        }
-
-        // Tạo đơn hàng mới
-        public OrderDTO CreateOrder(string orderID, DateTime orderDate, string orderStatus)
-        {
-            OrderDTO order = new OrderDTO
+            var order = new OrderDTO
             {
                 OrderID = orderID,
                 OrderDate = orderDate,
-                OrderStatus = orderStatus
+                OrderStatus = status
             };
-            orderDAL.AddOrder(order);
+            orderList.Add(order);
             return order;
         }
 
-        // Thêm sản phẩm vào đơn hàng
         public bool AddProductToOrder(OrderDTO order, ProductDTO product, int quantity)
         {
             if (product.Stock < quantity)
             {
-                Console.WriteLine("Số lượng tồn không đủ.");
+                Console.WriteLine("Khong du ton kho.");
                 return false;
             }
 
-            OrderItemDTO orderItem = order.OrderedProducts.Find(item => item.Product.ProductID == product.ProductID);
-            if (orderItem != null)
+            var item = order.OrderedProducts.Find(p => p.Product.ProductID == product.ProductID);
+            if (item != null)
             {
-                if (product.Stock < orderItem.Quantity + quantity)
+                if (product.Stock < item.Quantity + quantity)
                 {
-                    Console.WriteLine("Số lượng tồn không đủ để tăng số lượng đặt.");
+                    Console.WriteLine("Khong du ton kho de tang so luong.");
                     return false;
                 }
-                orderItem.Quantity += quantity;
+                item.Quantity += quantity;
             }
             else
             {
                 order.OrderedProducts.Add(new OrderItemDTO(product, quantity));
             }
-
             product.Stock -= quantity;
             return true;
         }
 
-        // Xóa sản phẩm khỏi đơn hàng
         public bool RemoveProductFromOrder(OrderDTO order, string productID)
         {
-            OrderItemDTO orderItem = order.OrderedProducts.Find(item => item.Product.ProductID == productID);
-            if (orderItem != null)
+            var item = order.OrderedProducts.Find(p => p.Product.ProductID == productID);
+            if (item != null)
             {
-                orderItem.Product.Stock += orderItem.Quantity;
-                order.OrderedProducts.Remove(orderItem);
+                item.Product.Stock += item.Quantity;
+                order.OrderedProducts.Remove(item);
                 return true;
             }
-            else
-            {
-                Console.WriteLine("Không tìm thấy sản phẩm trong đơn hàng.");
-                return false;
-            }
+            Console.WriteLine("Khong tim thay san pham trong don hang.");
+            return false;
         }
 
-        // Cập nhật số lượng sản phẩm đặt
-        public bool UpdateProductQuantity(OrderDTO order, string productID, int newQuantity)
+        public bool UpdateProductQuantity(OrderDTO order, string productID, int newQty)
         {
-            OrderItemDTO orderItem = order.OrderedProducts.Find(item => item.Product.ProductID == productID);
-            if (orderItem != null)
+            var item = order.OrderedProducts.Find(p => p.Product.ProductID == productID);
+            if (item != null)
             {
-                int currentQuantity = orderItem.Quantity;
-                int difference = newQuantity - currentQuantity;
-
-                if (difference > 0)
+                int diff = newQty - item.Quantity;
+                if (diff > 0 && item.Product.Stock < diff)
                 {
-                    if (orderItem.Product.Stock < difference)
-                    {
-                        Console.WriteLine("Số lượng tồn không đủ để cập nhật số lượng đặt.");
-                        return false;
-                    }
-                    orderItem.Product.Stock -= difference;
+                    Console.WriteLine("Khong du ton kho.");
+                    return false;
                 }
-                else if (difference < 0)
-                {
-                    orderItem.Product.Stock += (-difference);
-                }
-                orderItem.Quantity = newQuantity;
+                item.Product.Stock -= diff;
+                item.Quantity = newQty;
                 return true;
             }
-            else
-            {
-                Console.WriteLine("Không tìm thấy sản phẩm trong đơn hàng.");
-                return false;
-            }
+            Console.WriteLine("Khong tim thay san pham trong don hang.");
+            return false;
         }
 
-        // Tính tổng giá trị đơn hàng (bổ sung nếu cần, ở đây ta dùng hàm CalculateTotal của OrderDTO)
-        public decimal CalculateOrderTotal(OrderDTO order)
+        public void PrintOrder(OrderDTO order)
         {
-            return order.CalculateTotal();
-        }
-
-        // In chi tiết đơn hàng ra console
-        public void PrintOrderDetails(OrderDTO order)
-        {
-            Console.WriteLine("=================================");
+            Console.WriteLine("---------------------------");
             Console.WriteLine(order.GetOrderDetails());
-            Console.WriteLine("=================================");
+            Console.WriteLine("---------------------------");
         }
     }
 }

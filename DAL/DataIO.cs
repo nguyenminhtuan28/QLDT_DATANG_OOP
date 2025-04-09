@@ -11,48 +11,37 @@ namespace DAL
 {
     public class DataIO
     {
-        private string xmlFilePath;
-
-        public DataIO(string filePath)
-        {
-            xmlFilePath = filePath;
-        }
-
-        public LinkedList<ProductDTO> ReadData()
-        {
-            if (!File.Exists(xmlFilePath))
-            {
-                return new LinkedList<ProductDTO>();
-            }
-            try
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(List<ProductDTO>), new Type[] { typeof(OrderDTO) });
-                using (FileStream fs = new FileStream(xmlFilePath, FileMode.Open))
-                {
-                    List<ProductDTO> list = (List<ProductDTO>)serializer.Deserialize(fs);
-                    return new LinkedList<ProductDTO>(list);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Lỗi khi đọc file XML: " + ex.Message);
-                return new LinkedList<ProductDTO>();
-            }
-        }
-
-        public void WriteData(LinkedList<ProductDTO> data)
+        public void SaveOrders(string filePath, List<OrderDTO> orders)
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(List<ProductDTO>), new Type[] { typeof(OrderDTO) });
-                using (FileStream fs = new FileStream(xmlFilePath, FileMode.Create))
-                {
-                    serializer.Serialize(fs, new List<ProductDTO>(data));
-                }
+                XmlSerializer serializer = new XmlSerializer(typeof(List<OrderDTO>), new Type[] {
+                    typeof(OrderDTO), typeof(OrderItemDTO), typeof(PhoneDTO), typeof(LaptopDTO)
+                });
+                using FileStream fs = new FileStream(filePath, FileMode.Create);
+                serializer.Serialize(fs, orders);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Lỗi khi ghi file XML: " + ex.Message);
+                Console.WriteLine("Loi khi luu don hang: " + ex.Message);
+            }
+        }
+
+        public List<OrderDTO> LoadOrders(string filePath)
+        {
+            try
+            {
+                if (!File.Exists(filePath)) return new List<OrderDTO>();
+                XmlSerializer serializer = new XmlSerializer(typeof(List<OrderDTO>), new Type[] {
+                    typeof(OrderDTO), typeof(OrderItemDTO), typeof(PhoneDTO), typeof(LaptopDTO)
+                });
+                using FileStream fs = new FileStream(filePath, FileMode.Open);
+                return (List<OrderDTO>)serializer.Deserialize(fs);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Loi khi doc don hang: " + ex.Message);
+                return new List<OrderDTO>();
             }
         }
     }
