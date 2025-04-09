@@ -30,13 +30,13 @@ namespace DTO
 
         public string GetOrderDetails()
         {
-            string details = $"Mã đơn hàng: {OrderID}\nNgày đặt: {OrderDate}\nTrạng thái: {OrderStatus}\n";
-            details += "Danh sách sản phẩm:\n";
+            string details = $"Ma don hang: {OrderID}\nNgay dat: {OrderDate}\nTrang thai: {OrderStatus}\n";
+            details += "Danh sach san pham:\n";
             foreach (var item in OrderedProducts)
             {
-                details += $"  - {item.Product.Name} (Mã: {item.Product.ProductID}), Giá: {item.Product.Price}, Số lượng: {item.Quantity}\n";
+                details += $"  - {item.Product.Name} (Ma: {item.Product.ProductID}), Gia: {item.Product.Price}, SL: {item.Quantity}\n";
             }
-            details += $"Tổng giá trị đơn hàng: {CalculateTotal()}";
+            details += $"Tong tien: {CalculateTotal()}\n";
             return details;
         }
     }

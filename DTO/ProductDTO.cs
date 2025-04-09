@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace DTO
 {
     [XmlInclude(typeof(OrderDTO))] 
-    public class ProductDTO
+    public abstract class ProductDTO
     {
         public string ProductID { get; set; }
         public string Name { get; set; }

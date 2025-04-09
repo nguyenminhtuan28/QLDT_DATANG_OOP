@@ -10,205 +10,159 @@ namespace ConsoleApp
 {
     class Program
     {
-        static LinkedList<ProductDTO> linkedList = new LinkedList<ProductDTO>();
-        static DataIO dataIO = new DataIO("D:\\Study\\oop\\QLDT_DATANG\\GUI\\SanPham.xml");
+        static ProductDAL productDAL = new ProductDAL();
+        static ProductBLL productBLL = new ProductBLL(productDAL);
         static OrderBLL orderBLL = new OrderBLL();
+
+        static List<OrderDTO> orders = new List<OrderDTO>();
 
         static void Main(string[] args)
         {
-            linkedList = dataIO.ReadData();
-            if (linkedList.Count == 0)
-            {
-                linkedList.AddLast(new ProductDTO("P001", "Điện thoại A", 500, 10, "Điện thoại thông minh A"));
-                linkedList.AddLast(new ProductDTO("P002", "Điện thoại B", 700, 5, "Điện thoại thông minh B"));
-                linkedList.AddLast(new ProductDTO("P003", "Điện thoại C", 900, 8, "Điện thoại thông minh C"));
-            }
-
             bool exit = false;
             while (!exit)
             {
                 ShowMenu();
-                Console.Write("Chọn chức năng: ");
+                Console.Write("Chon chuc nang: ");
                 string choice = Console.ReadLine();
                 switch (choice)
                 {
-                    case "1":
-                        DisplayList();
-                        break;
-                    case "2":
-                        CreateOrder();
-                        break;
-                    case "3":
-                        AddProductToOrder();
-                        break;
-                    case "4":
-                        RemoveProductFromOrder();
-                        break;
-                    case "5":
-                        UpdateProductQuantityInOrder();
-                        break;
-                    case "6":
-                        PrintOrderDetails();
-                        break;
-                    case "7":
-                        dataIO.WriteData(linkedList);
-                        Console.WriteLine("Dữ liệu đã được lưu vào file XML.");
-                        break;
-                    case "8":
-                        linkedList = dataIO.ReadData();
-                        Console.WriteLine("Dữ liệu đã được đọc từ file XML.");
-                        break;
+                    case "1": AddPhone(); break;
+                    case "2": AddLaptop(); break;
+                    case "3": DisplayProducts(); break;
+                    case "4": CreateOrder(); break;
+                    case "5": AddProductToOrder(); break;
+                    case "6": RemoveProductFromOrder(); break;
+                    case "7": UpdateProductQuantity(); break;
+                    case "8": PrintOrderDetails(); break;
                     case "9":
-                        exit = true;
+                        new DataIO().SaveOrders("C:\\Users\\TUAN\\Source\\Repos\\QLDT_DATANG_OOP\\GUI\\SanPham.xml", orders);
+                        Console.WriteLine("Da luu don hang vao file xml");
                         break;
-                    default:
-                        Console.WriteLine("Chức năng không hợp lệ. Vui lòng chọn lại.");
+                    case "10":
+                        orders = new DataIO().LoadOrders("orders.xml");
+                        Console.WriteLine("Da tai don hang tu file xml");
                         break;
+                    case "11":
+                        exit = true; break;
+                    default: Console.WriteLine("Lua chon khong hop le."); break;
                 }
             }
         }
 
         static void ShowMenu()
         {
-            Console.WriteLine("\n===== MENU =====");
-            Console.WriteLine("1. Hiển thị danh sách sản phẩm & đơn hàng");
-            Console.WriteLine("2. Tạo đơn hàng mới");
-            Console.WriteLine("3. Thêm sản phẩm vào đơn hàng");
-            Console.WriteLine("4. Xóa sản phẩm khỏi đơn hàng");
-            Console.WriteLine("5. Cập nhật số lượng sản phẩm trong đơn hàng");
-            Console.WriteLine("6. In chi tiết đơn hàng");
-            Console.WriteLine("7. Lưu dữ liệu vào file XML");
-            Console.WriteLine("8. Đọc dữ liệu từ file XML");
-            Console.WriteLine("9. Thoát");
+            Console.WriteLine("===== MENU ===== ");
+            Console.WriteLine("1. Them dien thoai");
+            Console.WriteLine("2. Them laptop");
+            Console.WriteLine("3. Hien thi tat ca san pham");
+            Console.WriteLine("4. Tao don hang");
+            Console.WriteLine("5. Them san pham vao don hang");
+            Console.WriteLine("6. Xoa san pham khoi don hang");
+            Console.WriteLine("7. Cap nhat so luong trong don hang");
+            Console.WriteLine("8. In chi tiet don hang");
+            Console.WriteLine("9. Luu don hang vao file XML");
+            Console.WriteLine("10. Doc don hang tu file XML");
+            Console.WriteLine("11. Thoat");
         }
 
-        // Hiển thị danh sách liên kết: nếu đối tượng là OrderDTO thì in chi tiết đơn hàng, nếu là ProductDTO thì in thông tin sản phẩm
-        static void DisplayList()
+        static void AddPhone()
         {
-            foreach (var item in linkedList)
+            Console.Write("Ma SP: "); string id = Console.ReadLine();
+            Console.Write("Ten SP: "); string name = Console.ReadLine();
+            Console.Write("Gia: "); decimal price = decimal.Parse(Console.ReadLine());
+            Console.Write("Ton kho: "); int stock = int.Parse(Console.ReadLine());
+            Console.Write("Mo ta: "); string desc = Console.ReadLine();
+            Console.Write("He dieu hanh: "); string os = Console.ReadLine();
+            Console.Write("Pin: "); int pin = int.Parse(Console.ReadLine());
+
+            productBLL.AddProduct(new PhoneDTO(id, name, price, stock, desc, os, pin));
+            Console.WriteLine("Da them dien thoai.");
+        }
+
+        static void AddLaptop()
+        {
+            Console.Write("Ma SP: "); string id = Console.ReadLine();
+            Console.Write("Ten SP: "); string name = Console.ReadLine();
+            Console.Write("Gia: "); decimal price = decimal.Parse(Console.ReadLine());
+            Console.Write("Ton kho: "); int stock = int.Parse(Console.ReadLine());
+            Console.Write("Mo ta: "); string desc = Console.ReadLine();
+            Console.Write("CPU: "); string cpu = Console.ReadLine();
+            Console.Write("RAM: "); int ram = int.Parse(Console.ReadLine());
+
+            productBLL.AddProduct(new LaptopDTO(id, name, price, stock, desc, cpu, ram));
+            Console.WriteLine("Da them laptop.");
+        }
+
+        static void DisplayProducts()
+        {
+            foreach (var p in productBLL.GetAllProducts())
             {
-                if (item is OrderDTO order)
-                {
-                    Console.WriteLine("\n----- ĐƠN HÀNG -----");
-                    Console.WriteLine(order.GetOrderDetails());
-                }
+                if (p is PhoneDTO dt)
+                    Console.WriteLine($"[DT] {dt.Name}, OS: {dt.HeDieuHanh}, Pin: {dt.DungLuongPin}mAh");
+                else if (p is LaptopDTO lt)
+                    Console.WriteLine($"[LT] {lt.Name}, CPU: {lt.CPU}, RAM: {lt.RAM}GB");
                 else
-                {
-                    ProductDTO product = item as ProductDTO;
-                    Console.WriteLine("\n----- SẢN PHẨM -----");
-                    Console.WriteLine($"Mã: {product.ProductID}, Tên: {product.Name}, Giá: {product.Price}, Tồn: {product.Stock}, Mô tả: {product.Description}");
-                }
+                    Console.WriteLine($"[SP] {p.Name}");
             }
-        }
-
-        // Tìm đơn hàng theo mã trong danh sách liên kết
-        static OrderDTO FindOrderByID(string orderID)
-        {
-            foreach (var item in linkedList)
-            {
-                if (item is OrderDTO order && order.OrderID == orderID)
-                    return order;
-            }
-            return null;
-        }
-
-        // Tìm sản phẩm theo mã (chỉ duyệt các đối tượng không phải OrderDTO)
-        static ProductDTO FindProductByID(string productID)
-        {
-            foreach (var item in linkedList)
-            {
-                if (!(item is OrderDTO) && item.ProductID == productID)
-                    return item;
-            }
-            return null;
         }
 
         static void CreateOrder()
         {
-            Console.Write("Nhập mã đơn hàng: ");
-            string orderID = Console.ReadLine();
-            OrderDTO order = orderBLL.CreateOrder(orderID, DateTime.Now, "Chờ xử lý");
-            linkedList.AddLast(order);
-            Console.WriteLine("Đơn hàng đã được tạo.");
+            Console.Write("Nhap ma don hang: ");
+            string id = Console.ReadLine();
+            var order = orderBLL.CreateOrder(id, DateTime.Now, "Cho xu ly");
+            orders.Add(order);
+            Console.WriteLine("Da tao don hang.");
+        }
+
+        static OrderDTO FindOrder()
+        {
+            Console.Write("Nhap ma don hang: ");
+            string id = Console.ReadLine();
+            return orders.Find(o => o.OrderID == id);
         }
 
         static void AddProductToOrder()
         {
-            Console.Write("Nhập mã đơn hàng: ");
-            string orderID = Console.ReadLine();
-            OrderDTO order = FindOrderByID(orderID);
-            if (order == null)
-            {
-                Console.WriteLine("Không tìm thấy đơn hàng.");
-                return;
-            }
-            Console.Write("Nhập mã sản phẩm: ");
-            string productID = Console.ReadLine();
-            ProductDTO product = FindProductByID(productID);
-            if (product == null)
-            {
-                Console.WriteLine("Không tìm thấy sản phẩm.");
-                return;
-            }
-            Console.Write("Nhập số lượng đặt: ");
-            if (!int.TryParse(Console.ReadLine(), out int quantity))
-            {
-                Console.WriteLine("Số lượng không hợp lệ.");
-                return;
-            }
-            if (orderBLL.AddProductToOrder(order, product, quantity))
-                Console.WriteLine("Sản phẩm đã được thêm vào đơn hàng.");
+            var order = FindOrder();
+            if (order == null) { Console.WriteLine("Khong tim thay don hang."); return; }
+            Console.Write("Nhap ma SP: ");
+            string pid = Console.ReadLine();
+            var product = productBLL.FindProduct(pid);
+            if (product == null) { Console.WriteLine("Khong tim thay san pham."); return; }
+            Console.Write("Nhap so luong: ");
+            int qty = int.Parse(Console.ReadLine());
+            if (orderBLL.AddProductToOrder(order, product, qty))
+                Console.WriteLine("Them thanh cong.");
         }
 
         static void RemoveProductFromOrder()
         {
-            Console.Write("Nhập mã đơn hàng: ");
-            string orderID = Console.ReadLine();
-            OrderDTO order = FindOrderByID(orderID);
-            if (order == null)
-            {
-                Console.WriteLine("Không tìm thấy đơn hàng.");
-                return;
-            }
-            Console.Write("Nhập mã sản phẩm cần xóa: ");
-            string productID = Console.ReadLine();
-            if (orderBLL.RemoveProductFromOrder(order, productID))
-                Console.WriteLine("Sản phẩm đã được xóa khỏi đơn hàng.");
+            var order = FindOrder();
+            if (order == null) { Console.WriteLine("Khong tim thay don hang."); return; }
+            Console.Write("Nhap ma SP can xoa: ");
+            string pid = Console.ReadLine();
+            if (orderBLL.RemoveProductFromOrder(order, pid))
+                Console.WriteLine("Da xoa.");
         }
 
-        static void UpdateProductQuantityInOrder()
+        static void UpdateProductQuantity()
         {
-            Console.Write("Nhập mã đơn hàng: ");
-            string orderID = Console.ReadLine();
-            OrderDTO order = FindOrderByID(orderID);
-            if (order == null)
-            {
-                Console.WriteLine("Không tìm thấy đơn hàng.");
-                return;
-            }
-            Console.Write("Nhập mã sản phẩm: ");
-            string productID = Console.ReadLine();
-            Console.Write("Nhập số lượng mới: ");
-            if (!int.TryParse(Console.ReadLine(), out int newQuantity))
-            {
-                Console.WriteLine("Số lượng không hợp lệ.");
-                return;
-            }
-            if (orderBLL.UpdateProductQuantity(order, productID, newQuantity))
-                Console.WriteLine("Số lượng sản phẩm đã được cập nhật.");
+            var order = FindOrder();
+            if (order == null) { Console.WriteLine("Khong tim thay don hang."); return; }
+            Console.Write("Nhap ma SP: ");
+            string pid = Console.ReadLine();
+            Console.Write("Nhap SL moi: ");
+            int qty = int.Parse(Console.ReadLine());
+            if (orderBLL.UpdateProductQuantity(order, pid, qty))
+                Console.WriteLine("Da cap nhat.");
         }
 
         static void PrintOrderDetails()
         {
-            Console.Write("Nhập mã đơn hàng: ");
-            string orderID = Console.ReadLine();
-            OrderDTO order = FindOrderByID(orderID);
-            if (order == null)
-            {
-                Console.WriteLine("Không tìm thấy đơn hàng.");
-                return;
-            }
-            orderBLL.PrintOrderDetails(order);
+            var order = FindOrder();
+            if (order != null)
+                orderBLL.PrintOrder(order);
         }
     }
 }
